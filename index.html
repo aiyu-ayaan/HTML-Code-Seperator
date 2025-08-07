@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS & JS Extractor</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            flex-grow: 1;
+        }
+        /* Style for the textareas */
+        textarea {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        textarea::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+        /* Custom styles for the toggle switch */
+        input:checked ~ .dot {
+            transform: translateX(100%);
+            background-color: #34D399; /* Tailwind green-400 */
+        }
+        input:checked ~ .block {
+            background-color: #1F2937; /* Tailwind gray-800 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-cyan-400">Code Extractor</h1>
+            <p class="text-gray-400 mt-2">Paste your HTML code below to separate the HTML, CSS, and JavaScript.</p>
+        </header>
+
+        <main>
+            <!-- Input Section -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <label for="htmlInput" class="block text-lg font-semibold text-gray-300">Your HTML Code:</label>
+                    <!-- Toggle Switch for HTML Extraction -->
+                    <label for="htmlToggle" class="flex items-center cursor-pointer">
+                        <span class="mr-3 text-sm font-medium text-gray-300">Extract HTML</span>
+                        <div class="relative">
+                            <input type="checkbox" id="htmlToggle" class="sr-only">
+                            <div class="block bg-gray-700 w-14 h-8 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform"></div>
+                        </div>
+                    </label>
+                </div>
+                <textarea id="htmlInput" rows="12" class="w-full p-4 bg-gray-900 border border-gray-700 rounded-md focus:ring-2 focus:ring-cyan-500 focus:outline-none transition duration-200 text-gray-200" placeholder="Paste your HTML with <style> and <script> tags here..."></textarea>
+                <div class="flex justify-center mt-6">
+                    <button id="processBtn" class="bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out">
+                        Extract Code
+                    </button>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div id="output-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 hidden">
+                <!-- HTML Output (Initially Hidden) -->
+                <div id="html-output-wrapper" class="bg-gray-800 p-6 rounded-lg shadow-lg hidden md:col-span-2">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-xl font-semibold text-gray-300">Extracted HTML</h2>
+                        <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 px-4 rounded-md transition duration-200 flex items-center" data-target="htmlOutput">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            Copy
+                        </button>
+                    </div>
+                    <textarea id="htmlOutput" rows="15" readonly class="w-full p-4 bg-gray-900 border border-gray-700 rounded-md text-gray-200"></textarea>
+                </div>
+                
+                <!-- CSS Output -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-xl font-semibold text-gray-300">Extracted CSS</h2>
+                        <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 px-4 rounded-md transition duration-200 flex items-center" data-target="cssOutput">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            Copy
+                        </button>
+                    </div>
+                    <textarea id="cssOutput" rows="15" readonly class="w-full p-4 bg-gray-900 border border-gray-700 rounded-md text-gray-200"></textarea>
+                </div>
+
+                <!-- JavaScript Output -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-xl font-semibold text-gray-300">Extracted JavaScript</h2>
+                        <button class="copy-btn bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 px-4 rounded-md transition duration-200 flex items-center" data-target="jsOutput">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            Copy
+                        </button>
+                    </div>
+                    <textarea id="jsOutput" rows="15" readonly class="w-full p-4 bg-gray-900 border border-gray-700 rounded-md text-gray-200"></textarea>
+                </div>
+            </div>
+            
+            <!-- Copy Success Message -->
+            <div id="copy-message" class="fixed bottom-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transition-opacity duration-300">
+                Code copied to clipboard!
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="text-center py-6">
+        <a href="https://github.com/aiyu-ayaan" target="_blank" rel="noopener noreferrer" title="GitHub Profile" class="text-gray-500 hover:text-white transition-colors duration-300">
+            <svg class="w-8 h-8 inline-block" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <title>GitHub</title>
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+            </svg>
+        </a>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const htmlInput = document.getElementById('htmlInput');
+            const processBtn = document.getElementById('processBtn');
+            const outputContainer = document.getElementById('output-container');
+            const cssOutput = document.getElementById('cssOutput');
+            const jsOutput = document.getElementById('jsOutput');
+            const htmlOutput = document.getElementById('htmlOutput');
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            const copyMessage = document.getElementById('copy-message');
+            const htmlToggle = document.getElementById('htmlToggle');
+            const htmlOutputWrapper = document.getElementById('html-output-wrapper');
+
+            // --- Event Listener for the Process Button ---
+            processBtn.addEventListener('click', () => {
+                const rawInput = htmlInput.value;
+                if (!rawInput.trim()) {
+                    cssOutput.value = 'Input is empty.';
+                    jsOutput.value = 'Input is empty.';
+                    htmlOutput.value = '';
+                    outputContainer.classList.remove('hidden');
+                    return;
+                }
+                
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = rawInput;
+
+                // --- Extract CSS ---
+                const styleTag = tempDiv.querySelector('style');
+                cssOutput.value = styleTag ? styleTag.innerHTML.split('\n').map(line => line.trim()).join('\n').trim() : 'No <style> tag found.';
+
+                // --- Extract JavaScript ---
+                const scriptTag = tempDiv.querySelector('script');
+                jsOutput.value = scriptTag ? scriptTag.innerHTML.trim() : 'No <script> tag found.';
+
+                // --- Handle HTML Extraction and Visibility ---
+                if (htmlToggle.checked) {
+                    // Remove style and script tags to get only the body's HTML content
+                    tempDiv.querySelector('style')?.remove();
+                    tempDiv.querySelector('script')?.remove();
+                    htmlOutput.value = tempDiv.innerHTML.trim();
+                    htmlOutputWrapper.classList.remove('hidden');
+                } else {
+                    htmlOutputWrapper.classList.add('hidden');
+                }
+
+                outputContainer.classList.remove('hidden');
+                htmlInput.value = '';
+            });
+
+            // --- Event Listeners for Copy Buttons ---
+            copyButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const targetId = e.currentTarget.getAttribute('data-target');
+                    const targetTextarea = document.getElementById(targetId);
+                    
+                    if (targetTextarea && targetTextarea.value) {
+                        const tempTextareaForCopy = document.createElement('textarea');
+                        tempTextareaForCopy.value = targetTextarea.value;
+                        document.body.appendChild(tempTextareaForCopy);
+                        tempTextareaForCopy.select();
+                        
+                        try {
+                            document.execCommand('copy');
+                            showCopyMessage();
+                        } catch (err) {
+                            console.error('Failed to copy text: ', err);
+                        }
+                        
+                        document.body.removeChild(tempTextareaForCopy);
+                    }
+                });
+            });
+
+            // --- Function to show the "Copied!" message ---
+            function showCopyMessage() {
+                copyMessage.classList.remove('opacity-0');
+                setTimeout(() => {
+                    copyMessage.classList.add('opacity-0');
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
